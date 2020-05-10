@@ -22,6 +22,13 @@ function isObject(element) {
     return true
 }
 
+// Check if element is an object and empty
+function isEmptyObject(element) {
+    if (isObject(element) && !Object.keys(element).length) 
+        return true;
+    return false;
+}
+
 // Check object key to see if it has values
 function isObjEmpty(obj) {
     for (var key in obj) {
@@ -35,11 +42,21 @@ function capitalize(s) {
     return s && s[0].toUpperCase() + s.slice(1);
 }
 
+//
+function objectIndexes(element) {
+    return element.map((obj, id) => {
+        obj["id"] = id;
+        return obj;
+    });
+}
+
 module.exports = {
     flattenArray,
     getCurrentTimestamp,
     isArray,
     isObject,
+    isEmptyObject,
     isObjEmpty,
     capitalize,
+    objectIndexes,
 }
