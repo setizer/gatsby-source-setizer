@@ -4,20 +4,19 @@ const {
     isArray,
     isObject,
     isObjEmpty,
-} = require('./utils/helpers')
+} = require('./utils/helpers');
 
-// Set the current active enviroment
-let activeEnv =
-    process.env.GATSBY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
+let activeEnv = process.env.GATSBY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
 
-// If we are in dev, ignore the fact that we may be using a fake SSL certificate
 if (activeEnv == 'development') {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
 exports.sourceNodes = async (
     { actions: { createNode }, createContentDigest, createNodeId },
-    { plugins }
+    { plugins, url, token }
 ) => {
-    // Do your stuff!
+
+    console.log("source", url, token);
+        
 }
