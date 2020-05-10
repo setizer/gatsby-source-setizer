@@ -1,5 +1,10 @@
 /yarn.lock
+/package-lock.json
+node_modules
+.env*
+*.log
+.idea
+
 /*.js
 !index.js
-/node_modules/
-.env*
+/utils
