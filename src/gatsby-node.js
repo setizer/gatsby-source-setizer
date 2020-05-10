@@ -1,3 +1,6 @@
+import axios from "axios";
+import {capitalize} from "./utils/helpers";
+
 const {
     flattenArray,
     getCurrentTimestamp,
@@ -6,17 +9,53 @@ const {
     isObjEmpty,
 } = require('./utils/helpers');
 
-let activeEnv = process.env.GATSBY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
-
-if (activeEnv == 'development') {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 exports.sourceNodes = async (
     { actions: { createNode }, createContentDigest, createNodeId },
-    { plugins, url, token }
+    { url, token }
 ) => {
+    const res = await axios.get(`${url}?token=${token}`);
 
-    console.log("source", url, token);
+    if (res.data.status !== "success") 
+        return;
+
+    const { data } = res.data;
+
+    Object
+        .keys(data)
+        .map(key => {
+            const element = data[key];
+
+            const nodeMeta = {
+                id: createNodeId(key),
+                parent: null,
+                children: [],
+                internal: {
+                    type: capitalize(key),
+                    mediaType: `text/html`, // TODO
+                    content: JSON.stringify(element),
+                    contentDigest: createContentDigest(element),
+                },
+            };
+
+            createNode({
+                ...element,
+                ...nodeMeta,
+            });
+        });
+
+    return;
+}
+
+exports.onCreateNode = ({node, getNodesByType}) => {
+    if (node.internal.owner === "gatsby-source-setizer" && 
+        node.internal.type === "Pages") {
         
+        const [config] = getNodesByType("Config");
+
+        // get config node ??
+        
+        console.log("node");
+        console.log(node)
+        console.log("config", config);
+    }
 }

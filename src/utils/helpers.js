@@ -30,10 +30,16 @@ function isObjEmpty(obj) {
     return true
 }
 
+// Capitalize first letter
+function capitalize(s) {
+    return s && s[0].toUpperCase() + s.slice(1);
+}
+
 module.exports = {
     flattenArray,
     getCurrentTimestamp,
     isArray,
     isObject,
     isObjEmpty,
+    capitalize,
 }
