@@ -19,47 +19,57 @@ exports.sourceNodes = async (
     const { data } = res.data;
 
     Object
-        .keys(data)
-        .map(key => {
-            const element = data[key];
-            const nodeMeta = (key, element, id=false) => {
-                const nodeId = id ? `${key}-${element.index}` : key;
-                
-                return {
-                    id: createNodeId(nodeId),
-                    parent: null,
-                    children: [],
-                    internal: {
-                        type: capitalize(key),
-                        mediaType: `text/html`, // TODO
-                        content: JSON.stringify(element),
-                        contentDigest: createContentDigest(element),
-                    },
-                }
-            };
-
-            if (isEmptyObject(element)) return;
+    .keys(data)
+    .map(key => {
+        const element = data[key];
+        const nodeMeta = (key, element, id=false) => {
+            const nodeId = id ? `${key}-${element[id]}` : key;
             
-            if (key === "foreign") {
-                Object
-                    .keys(element)
-                    .map(fkName => {
-                        const fk = objectIndexes(element[fkName]);
+            return {
+                id: createNodeId(nodeId),
+                parent: null,
+                children: [],
+                internal: {
+                    type: capitalize(key),
+                    mediaType: `text/html`, // TODO
+                    content: JSON.stringify(element),
+                    contentDigest: createContentDigest(element),
+                },
+            }
+        };
 
-                        fk.map(f => {
-                            createNode({
-                                ...f, ...nodeMeta(fkName, f, true)
-                            });
+        if (isEmptyObject(element)) return;
+        
+        switch (key) {
+            case "foreign":
+                Object
+                .keys(element)
+                .map(fkName => {
+                    const fk = objectIndexes(element[fkName]);
+
+                    fk.map(f => {
+                        createNode({
+                            ...f, ...nodeMeta(fkName, f, "index")
                         });
                     });
-                return;
-            };
-
-            // createNode({
-            //     ...element,
-            //     ...nodeMeta(key, element),
-            // });
-        });
+                });
+                break;
+            case "pages":
+                element.map(page => {
+                    createNode({
+                        ...page,
+                        ...nodeMeta(key, page, "slug"),
+                    });
+                });
+                break;
+            default:
+                createNode({
+                    ...element,
+                    ...nodeMeta(key, element),
+                });
+                break;
+        };
+    });
 
     return;
 }
