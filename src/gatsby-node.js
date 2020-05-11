@@ -81,11 +81,33 @@ exports.onCreateNode = ({node, actions, getNodesByType}) => {
         const [config] = getNodesByType("Config");
         const {createPage} = actions;
 
-        // ! languages
-        // dynamic type ?
+        // ! languages => loop + get content just for the language
+        console.log("config", config);
+
+        // context send also config
 
         console.log("node", node)
-        console.log("config", config);
-        console.log("actions", createPage);
+        switch (node.type) {
+            case "ACF":
+                // custom template, send acf data
+                break;
+            
+            case "Dynamic":
+                // template global => send all element, pagination ?
+                // template global for 1 element => send an element
+                break;
+
+            case "Markdown":
+                // default template
+                // transform content to html
+                break;
+
+            case "HTML":
+                // default template
+                break;
+
+            default:
+                break;
+        }
     }
 }
