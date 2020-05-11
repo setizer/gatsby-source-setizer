@@ -45,7 +45,7 @@ function capitalize(s) {
 //
 function objectIndexes(element) {
     return element.map((obj, id) => {
-        obj["id"] = id;
+        obj["index"] = id;
         return obj;
     });
 }

@@ -22,17 +22,21 @@ exports.sourceNodes = async (
         .keys(data)
         .map(key => {
             const element = data[key];
-            const nodeMeta = (key, element) => ({
-                id: createNodeId(key),
-                parent: null,
-                children: [],
-                internal: {
-                    type: capitalize(key),
-                    mediaType: `text/html`, // TODO
-                    content: JSON.stringify(element),
-                    contentDigest: createContentDigest(element),
-                },
-            });
+            const nodeMeta = (key, element, id=false) => {
+                const nodeId = id ? `${key}-${element.index}` : key;
+                
+                return {
+                    id: createNodeId(nodeId),
+                    parent: null,
+                    children: [],
+                    internal: {
+                        type: capitalize(key),
+                        mediaType: `text/html`, // TODO
+                        content: JSON.stringify(element),
+                        contentDigest: createContentDigest(element),
+                    },
+                }
+            };
 
             if (isEmptyObject(element)) return;
             
@@ -41,19 +45,20 @@ exports.sourceNodes = async (
                     .keys(element)
                     .map(fkName => {
                         const fk = objectIndexes(element[fkName]);
-                        // HOW EDGES/NODES/... get list
-                        createNode({
-                            ...fk,
-                            ...nodeMeta(fkName, fk),
+
+                        fk.map(f => {
+                            createNode({
+                                ...f, ...nodeMeta(fkName, f, true)
+                            });
                         });
                     });
                 return;
             };
 
-            createNode({
-                element,
-                ...nodeMeta(key, element),
-            });
+            // createNode({
+            //     ...element,
+            //     ...nodeMeta(key, element),
+            // });
         });
 
     return;
