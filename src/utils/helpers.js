@@ -42,12 +42,19 @@ function capitalize(s) {
     return s && s[0].toUpperCase() + s.slice(1);
 }
 
-//
+// Add index on array of object
 function objectIndexes(element) {
     return element.map((obj, id) => {
         obj["index"] = id;
         return obj;
     });
+}
+
+// Count similarities between 2 arrays
+function countSimilarities(a, b) {
+    return a.filter(function(el) {
+        return b.indexOf(el) >= 0;
+    }).length;
 }
 
 module.exports = {
@@ -59,4 +66,5 @@ module.exports = {
     isObjEmpty,
     capitalize,
     objectIndexes,
+    countSimilarities ,
 }

@@ -1,11 +1,12 @@
 import path from "path";
 import axios from "axios";
-import {capitalize} from "./utils/helpers";
 
-const {
+import {
     isEmptyObject,
-    objectIndexes
-} = require('./utils/helpers');
+    objectIndexes,
+    capitalize,
+} from "./utils/helpers";
+import OnNode from "./OnNode";
 
 exports.sourceNodes = async (
     { actions: { createNode }, createContentDigest, createNodeId },
@@ -74,40 +75,15 @@ exports.sourceNodes = async (
     return;
 }
 
-exports.onCreateNode = ({node, actions, getNodesByType}) => {
+exports.onCreateNode = (props) => {
+    const {node} = props;
+
     if (node.internal.owner === "gatsby-source-setizer" && 
         node.internal.type === "Pages") {
-        
-        const [config] = getNodesByType("Config");
-        const {createPage} = actions;
 
-        // ! languages => loop + get content just for the language
-        console.log("config", config);
+        const Node = new OnNode(props);
 
-        // context send also config
-
-        console.log("node", node)
-        switch (node.type) {
-            case "ACF":
-                // custom template, send acf data
-                break;
-            
-            case "Dynamic":
-                // template global => send all element, pagination ?
-                // template global for 1 element => send an element
-                break;
-
-            case "Markdown":
-                // default template
-                // transform content to html
-                break;
-
-            case "HTML":
-                // default template
-                break;
-
-            default:
-                break;
-        }
+        Node.manageLanguages();
     }
+
 }
