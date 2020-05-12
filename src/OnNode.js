@@ -1,3 +1,5 @@
+import {resolve} from "path";
+
 import {isArray, isObject, countSimilarities} from "./utils/helpers";
 
 export default class OnNode {
@@ -12,18 +14,34 @@ export default class OnNode {
     Init() {
         this.config.languages.map(lang => {
             const element = this.getTranslate(this.node, lang);
-            console.log("end element translate", element);
-
-            const {createPage} = this.actions; 
-            //...
+            this.manageTypes(element, lang);
         });
     }
 
-    manageTypes() {
+    manageTypes(node, currentLanguage) {
+        const {createPage} = this.actions;
+
+        let path = `/${currentLanguage}/`;
+        let component, context;
+
+        // /!\ get path with position on array
+
         // /!\ context send also config
-        switch (this.node.type) {
+        switch (node.type) {
             case "ACF":
                 // custom template, send acf data
+                if (node.slug && node.slug !== "index"){
+                    path += `/${node.slug}`;
+                }
+                    
+                component = resolve(`src/templates/${node.slug}.js`);
+
+                context = {
+                    currentLanguage,
+                    ...node,
+                    config: this.config,
+                };
+
                 break;
             
             case "Dynamic":
@@ -42,6 +60,11 @@ export default class OnNode {
 
             default:
                 break;
+        }
+
+        if (path && component) {
+            // console.log("createPage test", path, component, context);
+            createPage({path, component, context});
         }
     }
 
