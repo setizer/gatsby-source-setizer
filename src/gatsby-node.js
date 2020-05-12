@@ -83,7 +83,7 @@ exports.onCreateNode = (props) => {
 
         const Node = new OnNode(props);
 
-        Node.manageLanguages();
+        Node.Init();
     }
 
 }

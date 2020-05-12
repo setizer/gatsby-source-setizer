@@ -7,13 +7,15 @@ export default class OnNode {
         this.getNodesByType = props.getNodesByType;
 
         this.config = this.getNodesByType("Config")[0];
-        // const {createPage} = this.actions;
     }
 
-    manageLanguages() {
+    Init() {
         this.config.languages.map(lang => {
-            const element = this.getTranslate(this.node, lang, this.config.languages);
+            const element = this.getTranslate(this.node, lang);
             console.log("end element translate", element);
+
+            const {createPage} = this.actions; 
+            //...
         });
     }
 
@@ -43,21 +45,17 @@ export default class OnNode {
         }
     }
 
-    getTranslate(node, lang, element = {}) {
-        // console.log("====init", lang, node); 
-    
+    getTranslate(node, lang, element = {}) {    
         Object.keys(node).map(key => {
             if (key === "internal") return;
     
             const e = node[key];
-            // console.log("e", e);
             
             if (isArray(e)) {
                 element[key] = this.getTranslate(e, lang, []);
             } else if (isObject(e)) {
-                // detect lang {en:.., fr:..}
                 if (this.delectTranslateObject(e)) {
-                    console.log("lang obj detected");
+                    element[key] = e[lang];
                 } else {
                     element[key] = this.getTranslate(e, lang);
                 }
@@ -70,13 +68,13 @@ export default class OnNode {
     }
     
     delectTranslateObject(element) {
-        const result = false;
+        const a = this.config.languages;
+        const b = Object.keys(element);
 
-        console.log(this.config.languages);
-        console.log("element", Object.keys(element));
+        if (countSimilarities(a, b) >= a.length) {
+            return true;
+        }
 
-        console.log("nb simi", countSimilarities(this.config.languages, Object.keys(element)))
-
-        return result;
+        return false;
     }
 }
